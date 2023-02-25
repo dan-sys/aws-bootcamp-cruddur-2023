@@ -20,6 +20,8 @@ COPY . .
 ENV FLASK_ENV=development
 
 EXPOSE ${PORT}
-
+#RUN apt-get update
+#RUN apt-get --yes install curl
+#HEALTHCHECK --start-period=5s --retries=3 CMD curl --fail http://localhost:4567/api/activities/home exit 1
 #CMD -command
 CMD [ "python3", "-m" , "flask", "run", "--host=0.0.0.0", "--port=4567"]
