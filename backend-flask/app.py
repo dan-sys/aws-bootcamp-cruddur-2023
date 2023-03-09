@@ -2,6 +2,7 @@ from flask import Flask
 from flask import request
 from flask_cors import CORS, cross_origin
 import os
+import sys
 
 from services.home_activities import *
 from services.notifications_activities import *
@@ -14,7 +15,7 @@ from services.messages import *
 from services.create_message import *
 from services.show_activity import *
 
-from lib.cognito_jwt_token import CognitoJwtToken
+from lib.cognito_jwt_token import CognitoJwtToken, extract_access_token, TokenVerifyError
 
 #HONEYCOMB MONITORING SERVICES
 from opentelemetry import trace
@@ -130,20 +131,17 @@ def data_create_message():
 
 @app.route("/api/activities/home", methods=['GET'])
 def data_home():
-  # request.headers.get('Authorization')
-  access_token = cognito_jwt_token.extract_access_token(request.headers)
+  access_token = extract_access_token(request.headers)
   try:
     claims = cognito_jwt_token.verify(access_token)
-    # app.logger.debug('claims')
+    app.logger.debug('authenticated')
     # app.logger.debug(claims)
+    app.logger.debug(claims['username'])
+    data = HomeActivities.run(cognito_user_id=claims['username'])
   except TokenVerifyError as e:
+    app.logger.debug(e)
     app.logger.debug('unauthenticated')
-
-    # _ = request.data
-    # abort(make_response(jsonify(message=str(e)), 401))
-
- 
-  data = HomeActivities.run()
+    data = HomeActivities.run()
   return data, 200
 
 @app.route("/api/activities/notifications", methods=['GET'])
