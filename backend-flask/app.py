@@ -14,6 +14,8 @@ from services.messages import *
 from services.create_message import *
 from services.show_activity import *
 
+from lib.cognito_jwt_token import CognitoJwtToken
+
 #HONEYCOMB MONITORING SERVICES
 from opentelemetry import trace
 from opentelemetry.instrumentation.flask import FlaskInstrumentor
@@ -28,7 +30,6 @@ from aws_xray_sdk.ext.flask.middleware import XRayMiddleware
 
 # ROLLBAR
 from time import strftime
-import os
 import rollbar
 import rollbar.contrib.flask
 from flask import got_request_exception
@@ -44,9 +45,14 @@ tracer = trace.get_tracer(__name__)
 xray_url = os.getenv("AWS_XRAY_URL")
 xray_recorder.configure(service='backend-flask', dynamic_naming=xray_url)
 
-
 #---------------------------------------------
 app = Flask(__name__)
+
+cognito_jwt_token = CognitoJwtToken(
+  user_pool_id= os.getenv("AWS_COGNITO_USER_POOL_ID"),
+  user_pool_client_id= os.getenv("AWS_COGNITO_USER_POOL_CLIENT_ID"),
+  region= os.getenv("AWS_DEFAULT_REGION")
+)
 
 XRayMiddleware(app, xray_recorder)
 FlaskInstrumentor().instrument_app(app)
@@ -124,7 +130,19 @@ def data_create_message():
 
 @app.route("/api/activities/home", methods=['GET'])
 def data_home():
-    request.headers.get('Authorization')
+  # request.headers.get('Authorization')
+  access_token = cognito_jwt_token.extract_access_token(request.headers)
+  try:
+    claims = cognito_jwt_token.verify(access_token)
+    # app.logger.debug('claims')
+    # app.logger.debug(claims)
+  except TokenVerifyError as e:
+    app.logger.debug('unauthenticated')
+
+    # _ = request.data
+    # abort(make_response(jsonify(message=str(e)), 401))
+
+ 
   data = HomeActivities.run()
   return data, 200
 
