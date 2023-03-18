@@ -1,6 +1,4 @@
-import uuid
-# import psycopg2
-# from lib.db import query_commit, print_sql_err
+from lib.db import db
 from datetime import datetime, timedelta, timezone
 
 class CreateActivity:
@@ -10,7 +8,6 @@ class CreateActivity:
       'data': None
     }
 
-    
     now = datetime.now(timezone.utc).astimezone()
 
     if (ttl == '30-days'):
@@ -44,36 +41,25 @@ class CreateActivity:
         'message': message
       }   
     else:
-      self.create_activity()
-      model['data'] = {
-        'uuid': uuid.uuid4(),
-        'display_name': 'Andrew Brown',
-        'handle':  user_handle,
-        'message': message,
-        'created_at': now.isoformat(),
-        'expires_at': (now + ttl_offset).isoformat()
-      }
+      expires_at = (now + ttl_offset)
+      uuid  = CreateActivity.create_activity(user_handle,message,expires_at)
+      object_json = CreateActivity.query_object_activity(uuid)
+      model['data'] = object_json
+  
     return model
 
-  def create_activity(user_uuid, message, expires_at):
+  def create_activity(handle, message, expires_at):
     
-    user_uuid = ''
-    sql = f"""
-    INSERT INTO (
-      user_uuid,
-      message,
-      expires_at
-    )
-    VALUES(
-      "{user_uuid}",
-      "{message}",
-      "{expires_at}"
-    )
-    """
-    # query_commit(sql)
-    
-      # conn = pool.connection()
-      # with pool.connection() as conn:
-        # with conn.cursor() as cur:     
-    # except (Exception, psycopg2.DatabaseError) as error:
-        # print(error)
+    sql = db.load_template('activity','create')
+   
+    uuid = db.query_commit(sql,
+    {'handle':handle,
+    'message':message,
+    'expires_at':expires_at
+    })
+    return uuid
+
+  def query_object_activity(uuid):
+    sql = db.load_template('activity','object')
+    return db.query_object_json(sql,
+    {'uuid':uuid})
