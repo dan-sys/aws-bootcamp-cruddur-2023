@@ -5,7 +5,6 @@ import os
 def lambda_handler(event, context):
     user = event['request']['userAttributes']
 
-    print(user)
     user_display_name = user['name']
     user_email        = user['email']
     user_handle       = user['preferred_username']
