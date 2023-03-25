@@ -41,6 +41,7 @@ print(f"my uuid : {my_user_uuid}")
 query_params = {
   'TableName': table_name,
   'KeyConditionExpression': 'partitionkey = :pkey',
+  'ScanIndexForward' : False,
   'ExpressionAttributeValues': {
     ':pkey': {'S': f"GRP#{my_user_uuid}"}
   },
