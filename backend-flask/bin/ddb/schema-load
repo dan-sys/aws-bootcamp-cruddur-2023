@@ -23,7 +23,7 @@ response = ddb.create_table(
             'AttributeType': 'S'
         },
         {
-            'AttributeName': 'secondarykey',
+            'AttributeName': 'sortkey',
             'AttributeType': 'S'
         },
     ],
@@ -33,7 +33,7 @@ response = ddb.create_table(
             'KeyType': 'HASH'
         },
         {
-            'AttributeName': 'secondarykey',
+            'AttributeName': 'sortkey',
             'KeyType': 'RANGE'
         },
     ],
