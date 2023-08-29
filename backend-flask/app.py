@@ -33,8 +33,6 @@ from aws_xray_sdk.ext.flask.middleware import XRayMiddleware
 # CloudWatch Logs ----
 import logging
 
-
-
 # ROLLBAR
 from time import strftime
 import rollbar
@@ -51,20 +49,6 @@ tracer = trace.get_tracer(__name__)
 #AWS X-Ray
 xray_url = os.getenv("AWS_XRAY_URL")
 xray_recorder.configure(service='backend-flask', dynamic_naming=xray_url)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 #---------------------------------------------
 app = Flask(__name__)
@@ -119,7 +103,11 @@ def rollbar_test():
 
 @app.route("/api/message_groups", methods=['GET'])
 def data_message_groups():
+  app.logger.debug("request header==========================")
+  app.logger.debug(request.headers)
   access_token = extract_access_token(request.headers)
+  app.logger.debug("access token ================================")
+  app.logger.debug(access_token)
   try:
     claims = cognito_jwt_token.verify(access_token)
     # authenticated request
