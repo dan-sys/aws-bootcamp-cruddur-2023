@@ -16,8 +16,8 @@ class Messages:
 
     print(f"Messages.py ===== UUID: == {my_user_uuid}")
 
-    ddb = Ddb.client()
-    data = Ddb.list_messages(ddb, message_group_uuid)
+    # ddb = Ddb.client()
+    data = Ddb.list_messages(message_group_uuid)
     print(f"Messages.py ===== list_messages == {data}")
 
     model['data'] = data

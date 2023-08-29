@@ -5,18 +5,25 @@ import uuid
 import os
 import botocore.exceptions
 
-class Ddb:
-  def client():
+class DDB:
+  def __init__(self):
+    self.init_client()
+
+  def init_client(self):
     endpoint_url = os.getenv("AWS_ENDPOINT_URL")
+
+    # endpoint_url = 'http://dynamodb-local:8000'
     if endpoint_url:
       attrs = { 'endpoint_url': endpoint_url }
     else:
       attrs = {}
-    dynamodb = boto3.client('dynamodb',**attrs)
-    return dynamodb
-  def list_message_groups(client,my_user_uuid):
+    # attrs = {'endpoint_url': 'http://localhost:8000'}
+    print(f"Endpoint_URL================={attrs}")
+    self.client = boto3.client('dynamodb',**attrs)
+  
+  def list_message_groups(self,my_user_uuid):
     year = str(datetime.now().year)
-    table_name = 'cruddur-messages'
+    table_name = 'cruddur-message'
     query_params = {
       'TableName': table_name,
       'KeyConditionExpression': 'pk = :pk AND begins_with(sk,:year)',
@@ -29,10 +36,11 @@ class Ddb:
     }
     print(f'ddb.py ======= list_message_groups query-params: === {query_params}')
     # query the table
-  
-    response = client.query(**query_params)
+    print('ddb.py ========================== list_message_groups Response=========================: === ')
+    response = self.client.query(**query_params)
+    print('ddb.py ========================== Here comes the list_message_groups Response=========================: === ')
     items = response['Items']
-    print(f'ddb.py =======list_message_groups query response: === {response}')
+    print(f'ddb.py ==============list_message_groups query response: ============ {response}')
     
 
     results = []
@@ -46,9 +54,9 @@ class Ddb:
         'created_at': last_sent_at
       })
     return results
-  def list_messages(client,message_group_uuid):
+  def list_messages(self,message_group_uuid):
     year = str(datetime.now().year)
-    table_name = 'cruddur-messages'
+    table_name = 'cruddur-message'
     query_params = {
       'TableName': table_name,
       'KeyConditionExpression': 'pk = :pk AND begins_with(sk,:year)',
@@ -60,7 +68,7 @@ class Ddb:
       }
     }
 
-    response = client.query(**query_params)
+    response = self.client.query(**query_params)
     items = response['Items']
     items.reverse()
     results = []
@@ -75,7 +83,7 @@ class Ddb:
       })
     return results
 
-  def create_message(client,message_group_uuid, message, my_user_uuid, my_user_display_name, my_user_handle):
+  def create_message(self,message_group_uuid, message, my_user_uuid, my_user_display_name, my_user_handle):
     now = datetime.now(timezone.utc).astimezone().isoformat()
     created_at = now
     message_uuid = str(uuid.uuid4())
@@ -90,8 +98,8 @@ class Ddb:
       'user_handle': {'S': my_user_handle}
     }
     # insert the record into the table
-    table_name = 'cruddur-messages'
-    response = client.put_item(
+    table_name = 'cruddur-message'
+    response = self.client.put_item(
       TableName=table_name,
       Item=record
     )
@@ -105,9 +113,9 @@ class Ddb:
       'message': message,
       'created_at': created_at
     }
-  def create_message_group(client, message,my_user_uuid, my_user_display_name, my_user_handle, other_user_uuid, other_user_display_name, other_user_handle):
+  def create_message_group(self, message,my_user_uuid, my_user_display_name, my_user_handle, other_user_uuid, other_user_display_name, other_user_handle):
     print('ddb.py ===== create_message_group.1')
-    table_name = 'cruddur-messages'
+    table_name = 'cruddur-message'
 
     message_group_uuid = str(uuid.uuid4())
     message_uuid = str(uuid.uuid4())
@@ -159,9 +167,11 @@ class Ddb:
     try:
       print('ddb.py  ===== create_message_group.try')
       # Begin the transaction
-      response = client.batch_write_item(RequestItems=items)
+      response = self.client.batch_write_item(RequestItems=items)
       return {
         'message_group_uuid': message_group_uuid
       }
     except botocore.exceptions.ClientError as e:
       print(f'ddb.py ===== create_message_group.error{e}')
+
+Ddb = DDB()

@@ -54,11 +54,10 @@ class CreateMessage:
       print(f"Create_message.py ===== USERS=[my-user] == {my_user}")
       print(f"Create_message.py ===== USERS=[other-user] == {other_user}")
 
-      ddb = Ddb.client()
+      # ddb = Ddb.client()
 
       if (mode == "update"):
         data = Ddb.create_message(
-          client=ddb,
           message_group_uuid=message_group_uuid,
           message=message,
           my_user_uuid=my_user['uuid'],
@@ -67,7 +66,6 @@ class CreateMessage:
         )
       elif (mode == "create"):
         data = Ddb.create_message_group(
-          client=ddb,
           message=message,
           my_user_uuid=my_user['uuid'],
           my_user_display_name=my_user['display_name'],
