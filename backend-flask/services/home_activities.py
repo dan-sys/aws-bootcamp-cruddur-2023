@@ -3,16 +3,16 @@ from opentelemetry import trace
 
 from lib.db import db
 
-tracer = trace.get_tracer("home.activities")
+# tracer = trace.get_tracer("home.activities")
 
 class HomeActivities:
   def run(cognito_user_id=None):
-    with tracer.start_as_current_span("home-activities-mock-data"):
-      span = trace.get_current_span()
-      now = datetime.now(timezone.utc).astimezone()
-      span.set_attribute("app.now",now.isoformat())
+  #   with tracer.start_as_current_span("home-activities-mock-data"):
+  #     span = trace.get_current_span()
+  #     now = datetime.now(timezone.utc).astimezone()
+  #     span.set_attribute("app.now",now.isoformat())
       
-      sql = db.load_template('activity','home')
+      sql = db.template('activity','home')
       results = db.query_array_json(sql)
 
       return results

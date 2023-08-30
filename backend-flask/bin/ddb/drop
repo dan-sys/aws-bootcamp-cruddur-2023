@@ -3,7 +3,7 @@
 set -e
 
 if [ -z = "$1" ]; then
-    echo "No TABLE_NAME.argument.supplied eg ./bin/ddb/drop cruddur-messages prod"
+    echo "No TABLE_NAME.argument.supplied eg ./bin/ddb/drop cruddur-message prod"
     exit 1
 fi
 
