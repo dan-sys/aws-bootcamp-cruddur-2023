@@ -34,7 +34,7 @@ if len(sys.argv) == 2:
 #       users.handle =%(handle)s
 #   """
 #   uuid = db.query_value(sql,{
-#     'handle':  'ohahuru'
+#     'handle':  'dannyyo'
 #   })
 #   return uuid
 

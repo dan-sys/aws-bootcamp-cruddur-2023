@@ -173,7 +173,7 @@ components:
           example: 0056a369-4618-43a4-ad88-e7c371bf5582
         display_name:
           type: string
-          example: "Hillary Ugwu"
+          example: "Daniel Adeniyi"
         handle:
           type: string
           example: "andrewbrown"
@@ -231,7 +231,7 @@ components:
           example: 0056a369-4618-43a4-ad88-e7c371bf5582
         display_name:
           type: string
-          example: "Hillary Ugwu"
+          example: "Daniel Adeniyi"
         handle:
           type: string
           example: "andrewbrown"

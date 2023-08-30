@@ -18,8 +18,8 @@ VALUES (
         'ohary37.com',
         '5ae290ed-55d1-47a0-bc6d-fe2bc2700389'
     ), (
-        'Hillary Ugwu',
-        'ohahuru',
+        'Daniel Adeniyi',
+        'dannyyo',
         'ohary37.com',
         'MOCK'
     );
